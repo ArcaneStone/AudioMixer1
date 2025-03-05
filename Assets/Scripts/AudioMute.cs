@@ -1,25 +1,30 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class AudioMute : MonoBehaviour
 {
-    [SerializeField] private AudioSource backgroundMusic;
-    [SerializeField] private AudioSource soundEffect1;
-    [SerializeField] private AudioSource soundEffect2;
-    [SerializeField] private AudioSource soundEffect3;
+    [SerializeField] private Toggle _muteToggle;
+    [SerializeField] private AudioMixer _audioMixer;
 
-    [SerializeField] private Toggle muteToggle;
+    [SerializeField] private string exposedParameterName = "Master";
 
-    private void Start()
+    private void OnEnable()
     {
-        muteToggle.onValueChanged.AddListener(ToggleAllSounds);
+        _muteToggle.onValueChanged.AddListener(ToggleAudio);
     }
 
-    private void ToggleAllSounds(bool isMuted)
+    private void OnDisable()
     {
-        backgroundMusic.mute = isMuted;
-        soundEffect1.mute = isMuted;
-        soundEffect2.mute = isMuted;
-        soundEffect3.mute = isMuted;
+        _muteToggle.onValueChanged.RemoveListener(ToggleAudio);
+    }
+
+    private void ToggleAudio(bool isMuted)
+    {
+        float minValue = -80f;
+        float maxValue = 0f;
+
+        _audioMixer.SetFloat(exposedParameterName, isMuted ? minValue : maxValue);
     }
 }
+
